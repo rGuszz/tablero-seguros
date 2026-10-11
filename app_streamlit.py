@@ -24,6 +24,12 @@ import streamlit as st
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
 import warnings; warnings.filterwarnings("ignore")
+import gspread
+
+@st.cache_resource
+def hoja():
+    gc = gspread.service_account_from_dict(st.secrets["gcp_service_account"])
+    return gc.open_by_url(st.secrets["sheet_url"]).sheet1
 
 st.set_page_config(page_title="Tablero de cartera — Diplomado ML Seguros",
                    page_icon="📊", layout="wide")
@@ -318,3 +324,12 @@ with tab_cotiza:
         st.pyplot(fig3)
         st.caption(f"Prima base (perfil de referencia): ${pp_ref:,.2f} → tu prima pura: ${pp_glm:,.2f}. "
                    "Rojo = pagas más · verde = pagas menos.")
+    if st.button("Cotizar", type="primary"):
+        st.session_state["perfil"] = perfil
+        # ... cálculo de pp_glm y tarifa ...
+        hoja().append_row([pd.Timestamp.now().isoformat(),
+                            perfil["edad_conductor"], perfil["cobertura"], perfil["sexo"],
+                            perfil["uso"], perfil["combustible"], perfil["antiguedad"],
+                            perfil["potencia"], perfil["bonus"], round(pp_glm, 2), round(tarifa, 2)])
+        st.success("Cotización guardada ✔")
+    st.dataframe(pd.DataFrame(hoja().get_all_records()).tail(10))
