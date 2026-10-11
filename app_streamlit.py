@@ -328,5 +328,6 @@ with tab_cotiza:
         fig3.tight_layout()
         st.pyplot(fig3)
         st.caption(f"Prima base (perfil de referencia): ${pp_ref:,.2f} → tu prima pura: ${pp_glm:,.2f}. "
-                   "Rojo = pagas más · verde = pagas menos.")  
+                   "Rojo = pagas más · verde = pagas menos.") 
+    st.markdown("#### Cotizaciones realizados (últimos 10)")     
     st.dataframe(pd.DataFrame(hoja().get_all_records()).tail(10))
