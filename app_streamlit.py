@@ -278,17 +278,26 @@ with tab_cotiza:
               "bonus": c4.slider("Bonus-malus", 0, 25, 5)}
     if st.button("Cotizar", type="primary"):
         st.session_state["perfil"] = perfil
+        
+        # --- Cálculo y guardado SOLO ocurren al hacer clic en el botón ---
+        p = st.session_state["perfil"]
+        pp_emp, n = cotizar_empirico(datos, p)
+        freq, sev, pp_glm, pp_tw = cotizar_glm(p, m_freq, m_sev, m_agg)
+        tarifa = pp_glm / (1 - gastos - margen)
+        
+        hoja().append_row([
+            pd.Timestamp.now().isoformat(),
+            perfil["edad_conductor"], perfil["cobertura"], perfil["sexo"],
+            perfil["uso"], perfil["combustible"], perfil["antiguedad"],
+            perfil["potencia"], perfil["bonus"], round(pp_glm, 2), round(tarifa, 2)
+        ])
+        st.success("Cotización guardada ✔")
 
     if "perfil" in st.session_state:
         p = st.session_state["perfil"]
         pp_emp, n = cotizar_empirico(datos, p)
         freq, sev, pp_glm, pp_tw = cotizar_glm(p, m_freq, m_sev, m_agg)
         tarifa = pp_glm / (1 - gastos - margen)
-        hoja().append_row([pd.Timestamp.now().isoformat(),
-                                                perfil["edad_conductor"], perfil["cobertura"], perfil["sexo"],
-                                                perfil["uso"], perfil["combustible"], perfil["antiguedad"],
-                                                perfil["potencia"], perfil["bonus"], round(pp_glm, 2), round(tarifa, 2)])
-        st.success("Cotización guardada ✔")
 
         # KPIs del cotizador EN ORDEN: 1 lo que dice la data → 2 el modelo → 3 el precio
         k1, k2, k3 = st.columns(3)
