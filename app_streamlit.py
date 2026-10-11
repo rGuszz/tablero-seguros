@@ -323,10 +323,7 @@ with tab_cotiza:
         fig3.tight_layout()
         st.pyplot(fig3)
         st.caption(f"Prima base (perfil de referencia): ${pp_ref:,.2f} → tu prima pura: ${pp_glm:,.2f}. "
-                   "Rojo = pagas más · verde = pagas menos.")
-    if st.button("Cotizar", type="primary"):
-        st.session_state["perfil"] = perfil
-        # ... cálculo de pp_glm y tarifa ...
+                   "Rojo = pagas más · verde = pagas menos.")  
         hoja().append_row([pd.Timestamp.now().isoformat(),
                             perfil["edad_conductor"], perfil["cobertura"], perfil["sexo"],
                             perfil["uso"], perfil["combustible"], perfil["antiguedad"],
